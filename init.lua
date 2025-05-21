@@ -785,10 +785,11 @@ require('lazy').setup({
 
   { -- Autoformat
     'stevearc/conform.nvim',
-    lazy = false,
+    event = { 'BufWritePre' },
+    cmd = { 'ConformInfo' },
     keys = {
       {
-        '<leader>fm',
+        '<leader>f',
         function()
           require('conform').format { async = true, lsp_format = 'fallback' }
         end,
@@ -806,10 +807,6 @@ require('lazy').setup({
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
-        local disable_global = { javascript = true, javascriptreact = true, typescript = true, typescriptreact = true, scss = true }
-        if disable_global[vim.bo[bufnr].filetype] then
-          return
-        end
           return {
             timeout_ms = 500,
             lsp_format = 'fallback',
@@ -821,12 +818,8 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
-        -- You can use a sub-list to tell conform to run *until* a formatter
-        -- is found.
-        javascript = { { 'prettier' } },
-        typescript = { { 'prettier' } },
-        javascriptreact = { { 'prettier' } },
-        typescriptreact = { { 'prettier' } },
+        -- You can use 'stop_after_first' to run the first available formatter from the list
+        -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
   },
@@ -1204,6 +1197,21 @@ require('lazy').setup({
   {
     'mbbill/undotree',
     lazy = false,
+  },
+  {
+    'frankroeder/parrot.nvim',
+    dependencies = { 'ibhagwan/fzf-lua', 'nvim-lua/plenary.nvim' },
+    -- optionally include "folke/noice.nvim" or "rcarriga/nvim-notify" for beautiful notifications
+    config = function()
+      require('parrot').setup {
+        -- Providers must be explicitly added to make them available.
+        providers = {
+          gemini = {
+            api_key = os.getenv 'GEMINI_API_KEY',
+          },
+        },
+      }
+    end,
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
